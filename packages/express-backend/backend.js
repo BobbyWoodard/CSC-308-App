@@ -53,6 +53,10 @@ const findUserByNameAndJob = (name, job) => {
   );
 };
 
+const randomID = () => {
+  return Math.random().toString(36).substring(2,8);
+}
+
 app.get("/users", (req, res) => {
   const name = req.query.name;
   const job = req.query.job;
@@ -84,6 +88,8 @@ app.get("/users/:id", (req, res) => {
   }
 });
 
+
+
 const addUser = (user) => {
   users["users_list"].push(user);
   return user;
@@ -91,8 +97,10 @@ const addUser = (user) => {
 
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
+  userToAdd["id"] = randomID();
   addUser(userToAdd);
-  res.send();
+  res.status(201);
+  res.send(users);
 });
 
 const deleteUser = (user) => {
@@ -100,10 +108,15 @@ const deleteUser = (user) => {
     return null;
 }
 
-app.delete("/users", (req, res) => {
-    const userToDelete = req.body;
-    deleteUser(userToDelete);
-    res.send();
+app.delete("/users/:id", (req, res) => {
+    const id = req.params["id"];
+    let result = findUserById(id);
+    if (result === undefined) {
+      res.status(404).send("Resource not found.");
+    } else {
+      deleteUser(result);
+      res.status(204).end();
+    }
 });
 
 app.listen(port, () => {
