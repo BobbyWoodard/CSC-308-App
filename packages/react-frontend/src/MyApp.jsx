@@ -7,7 +7,7 @@ function MyApp() {
   const [characters, setCharacters] = useState([]);
 
   function deleteUser(person) {
-    const promise = fetch(`Http://localhost:8000/users/${person.id}`, {
+    const promise = fetch(`Http://localhost:8000/users/${person._id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -65,7 +65,9 @@ function MyApp() {
           throw new Error("No create!");
         return res.json();
       })
-      .then((json) => setCharacters(json.users_list))
+      .then(newUser => {
+        setCharacters([...characters, newUser]);
+      })
       .catch((error) => {
         console.log(error);
       })
